@@ -11,6 +11,19 @@ export class DatabaseUserRepository implements UserRepository {
     @InjectRepository(User)
     private readonly userEntityRepository: Repository<User>,
   ) {}
+  async insert(user: UserM): Promise<UserM> {
+    const userEntity = this.toUserEntity(user);
+    const result = await this.userEntityRepository.insert(userEntity);
+    return this.toUser(result.generatedMaps[0] as User);
+    console.log(result.generatedMaps);
+  }
+  async findAll(): Promise<UserM[]> {
+    const usersEntity = await this.userEntityRepository.find();
+    return usersEntity.map((usersEntity) => this.toUser(usersEntity));
+  }
+  findById(id: number): Promise<UserM> {
+    throw new Error('Method not implemented.');
+  }
   async updateRefreshToken(username: string, refreshToken: string): Promise<void> {
     await this.userEntityRepository.update(
       {
